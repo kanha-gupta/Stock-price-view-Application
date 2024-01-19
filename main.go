@@ -1,40 +1,62 @@
 package main
 
 import (
-    "database/sql"
-    "encoding/csv"
-    "fmt"
-    "os"
-    "strconv"
-    _ "github.com/go-sql-driver/mysql"
+	"database/sql"
+	"encoding/csv"
+	
+	"fmt"
+	"os"
+	"strconv"
+
+	_ "github.com/go-sql-driver/mysql"
+	
 )
 
-type Stock struct {
-    Code  string
-    Name  string
-    Open  float64
-    High  float64
-    Low   float64
-    Close float64
-}
+// type Stock struct {
+//     Code  string
+//     Name  string
+//     Open  float64
+//     High  float64
+//     Low   float64
+//     Close float64
+// }
 
-func main() {
-    // Connect to the MySQL database
-    db, err := sql.Open("mysql", "username:password@tcp(localhost:3306)/your_database")
-    if err != nil {
-        panic(err)
-    }
-    defer db.Close()
 
-    // Read and parse the CSV file
-    stocks, err := readCSV("EQ190124.CSV")
-    if err != nil {
-        panic(err)
-    }
+// func main() {
+//     // Connect to the MySQL database
+//     // db, err := sql.Open("mysql", "username:password@tcp(localhost:3306)/your_database")
+//     db, err := sql.Open("mysql", "ODBC:0@tcp(localhost:3306)/app_database")
+//     if err != nil {
+//         panic(err)
+//     }
+//     defer db.Close()
 
-    // Insert data into the database
-    insertStocks(db, stocks)
-}
+//     // Read and parse the CSV file
+//     stocks, err := readCSV("EQ190124.CSV")
+//     if err != nil {
+//         panic(err)
+//     }
+
+//     // Insert data into the database
+//     insertStocks(db, stocks)
+
+//     db, err = sql.Open("mysql", "username:password@/your_database")
+//     if err != nil {
+//         log.Fatal(err)
+//     }
+//     defer db.Close()
+
+//     router := mux.NewRouter()
+//     router.HandleFunc("/stocks/top", getTopStocks).Methods("GET")
+//     router.HandleFunc("/stocks/search", findStocksByName).Methods("GET")
+//     // router.HandleFunc("/stocks/history/{code}", getStockHistory).Methods("GET")
+//     router.HandleFunc("/favourites", addFavouriteStock).Methods("POST")
+//     router.HandleFunc("/favourites", getFavouriteStocks).Methods("GET")
+//     router.HandleFunc("/favourites/{code}", removeFavouriteStock).Methods("DELETE")
+
+//     log.Println("Server started on :8080")
+//     http.ListenAndServe(":8080", router)
+// }
 
 func readCSV(filePath string) ([]Stock, error) {
     file, err := os.Open(filePath)
@@ -84,3 +106,4 @@ func insertStocks(db *sql.DB, stocks []Stock) {
         }
     }
 }
+
