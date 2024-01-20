@@ -25,9 +25,10 @@ func main() {
     router.HandleFunc("/stocks/top", getTopStocks).Methods("GET") //working fine curl http://localhost:8080/stocks/top
     router.HandleFunc("/stocks/search", findStocksByName).Methods("GET") //working fine curl http://localhost:8080/stocks/search?name=<stock_name>
 	router.HandleFunc("/stocks/history/{code}", getStockHistory).Methods("GET") //working fine curl http://localhost:8080/stocks/history/500206  (last is stock code)
-    router.HandleFunc("/favourites", addFavouriteStock).Methods("POST") //not working
-    router.HandleFunc("/favourites", getFavouriteStocks).Methods("GET") //not working
-    router.HandleFunc("/favourites/{code}", removeFavouriteStock).Methods("DELETE")
+
+    router.HandleFunc("/favourites", addFavouriteStock).Methods("POST") //curl -X POST http://localhost:8080/favourites -H "Content-Type: application/json" -d "{\"Code\": \"504988\"}"
+    router.HandleFunc("/favourites", getFavouriteStocks).Methods("GET") //curl -X GET http://localhost:8080/favourites 504988
+    router.HandleFunc("/favourites/{code}", removeFavouriteStock).Methods("DELETE") //curl -X DELETE http://localhost:8080/favourites/504988
 
     log.Println("Server started on :8080")
     http.ListenAndServe(":8080", router)
@@ -130,18 +131,52 @@ func addFavouriteStock(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintln(w, "Added to favourites")
 }
 
+
+// func addFavouriteStock(w http.ResponseWriter, r *http.Request) {
+//     var s Stock
+//     if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
+//         http.Error(w, err.Error(), http.StatusBadRequest)
+//         return
+//     }
+
+//     _, err := db.Exec("INSERT INTO favourites (code) VALUES (?)", s.Code)
+//     if err != nil {
+//         http.Error(w, err.Error(), http.StatusInternalServerError)
+//         return
+//     }
+
+//     fmt.Fprintln(w, "Added to favourites")
+// }
+
+// func removeFavouriteStock(w http.ResponseWriter, r *http.Request) {
+//     vars := mux.Vars(r)
+//     code := vars["code"]
+
+//     _, err := db.Exec("DELETE FROM favourites WHERE code = ?", code)
+//     if err != nil {
+//         http.Error(w, err.Error(), http.StatusInternalServerError)
+//         return
+//     }
+
+//     fmt.Fprintln(w, "Removed from favourites")
+// }
+
 func removeFavouriteStock(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
-    code := vars["code"]
+    stockCode := vars["code"]
 
-    _, err := db.Exec("DELETE FROM favourites WHERE code = ?", code)
+    // SQL statement to delete the stock from favourites.
+    _, err := db.Exec("DELETE FROM favourites WHERE code = ?", stockCode)
     if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
+        // Handle the error, send an appropriate response.
+        http.Error(w, "Error removing stock from favourites: "+err.Error(), http.StatusInternalServerError)
         return
     }
 
-    fmt.Fprintln(w, "Removed from favourites")
+    // Sending a success response.
+    fmt.Fprintln(w, "Stock removed from favourites")
 }
+
 
 // func getStockHistory(w http.ResponseWriter, r *http.Request) { 
 //     vars := mux.Vars(r)
@@ -167,11 +202,36 @@ func removeFavouriteStock(w http.ResponseWriter, r *http.Request) {
 //     json.NewEncoder(w).Encode(history)
 // }
 
-func getFavouriteStocks(w http.ResponseWriter, r *http.Request) {
-    // Example: Fetching favourites for a hardcoded user.
-    userID := "exampleUserID" // Replace with actual user ID logic
+// func getFavouriteStocks(w http.ResponseWriter, r *http.Request) {
+//     // Example: Fetching favourites for a hardcoded user.
+//     userID := "exampleUserID" // Replace with actual user ID logic
 
-    rows, err := db.Query("SELECT s.code, s.name, s.open, s.high, s.low, s.close FROM stocks s JOIN favourites f ON s.code = f.code WHERE f.id = ?", userID)
+//     rows, err := db.Query("SELECT s.code, s.name, s.open, s.high, s.low, s.close FROM stocks s JOIN favourites f ON s.code = f.code WHERE f.id = ?", userID)
+//     if err != nil {
+//         http.Error(w, err.Error(), http.StatusInternalServerError)
+//         return
+//     }
+//     defer rows.Close()
+
+//     var favourites []Stock
+//     for rows.Next() {
+//         var s Stock
+//         if err := rows.Scan(&s.Code, &s.Name, &s.Open, &s.High, &s.Low, &s.Close); err != nil {
+//             http.Error(w, err.Error(), http.StatusInternalServerError)
+//             return
+//         }
+//         favourites = append(favourites, s)
+//     }
+
+//     json.NewEncoder(w).Encode(favourites)
+// }
+
+func getFavouriteStocks(w http.ResponseWriter, r *http.Request) {
+    rows, err := db.Query(`
+        SELECT s.id, s.code, s.name, s.open, s.high, s.low, s.close 
+        FROM stocks s 
+        JOIN favourites f ON s.code = f.code
+    `)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -181,7 +241,7 @@ func getFavouriteStocks(w http.ResponseWriter, r *http.Request) {
     var favourites []Stock
     for rows.Next() {
         var s Stock
-        if err := rows.Scan(&s.Code, &s.Name, &s.Open, &s.High, &s.Low, &s.Close); err != nil {
+        if err := rows.Scan(&s.ID, &s.Code, &s.Name, &s.Open, &s.High, &s.Low, &s.Close); err != nil {
             http.Error(w, err.Error(), http.StatusInternalServerError)
             return
         }
@@ -190,6 +250,7 @@ func getFavouriteStocks(w http.ResponseWriter, r *http.Request) {
 
     json.NewEncoder(w).Encode(favourites)
 }
+
 
 
 
