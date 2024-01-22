@@ -1,4 +1,4 @@
-module my-app
+module github.com/kanha-gupta/stockapp
 
 go 1.21.2
 
