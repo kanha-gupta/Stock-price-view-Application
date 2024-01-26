@@ -39,7 +39,7 @@ This guide outlines the steps to set up the necessary database and tables for th
    Use the following MySQL command to create a new database:
 
    ```sql
-   CREATE DATABASE database_name;
+   CREATE DATABASE app_database;
    ```
 
 2. **Create Two Tables Named `stocks` and `favourites` (MySQL)**
