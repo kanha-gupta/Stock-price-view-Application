@@ -26,14 +26,12 @@ func ReadCSV(filePath string) ([]database_structure.Stock, error) {
 	for {
 		record, err := reader.Read()
 		if err != nil {
-			break // EOF or error
+			break
 		}
-
-		open, _ := strconv.ParseFloat(record[2], 64)
-		high, _ := strconv.ParseFloat(record[3], 64)
-		low, _ := strconv.ParseFloat(record[4], 64)
-		close, _ := strconv.ParseFloat(record[5], 64)
-
+		open, _ := strconv.ParseFloat(record[4], 64)
+		high, _ := strconv.ParseFloat(record[5], 64)
+		low, _ := strconv.ParseFloat(record[6], 64)
+		close, _ := strconv.ParseFloat(record[7], 64)
 		stocks = append(stocks, database_structure.Stock{
 			Code:  record[0],
 			Name:  record[1],
