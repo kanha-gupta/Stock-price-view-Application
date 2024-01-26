@@ -67,9 +67,10 @@ This guide outlines the steps to set up the necessary database and tables for th
       );
       ```
 
-3. **Run `main.go` to Start the Server**
+3. **Run `go run main.go [URL]` to Start the Server**
 
-    - After setting up the database and tables, run the `main.go` file to start the server. Ensure you have put your preferred URL in the configuration.
+    - Example : go run main.go https://www.bseindia.com/download/BhavCopy/Equity/EQ_ISINCODE_250124.zip
+     - After setting up the database and tables, run the `main.go` file to start the server. Ensure you have put your preferred URL in the configuration.
 
 
 # Stock API Commands

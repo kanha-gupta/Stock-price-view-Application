@@ -6,10 +6,18 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	api "github.com/kanha-gupta/stockapp/API"
 	"github.com/kanha-gupta/stockapp/dataProcessing"
+	"os"
 )
 
 func main() {
-	url := "https://www.bseindia.com/download/BhavCopy/Equity/EQ250124_CSV.ZIP"
+	defaultUrl := "https://www.bseindia.com/download/BhavCopy/Equity/EQ250124_CSV.ZIP"
+	var url string
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: go run main.go [URL]")
+		url = defaultUrl
+	} else {
+		url = os.Args[1]
+	}
 	zipFileName, err := dataProcessing.DownloadPackage(url)
 	if err != nil {
 		fmt.Println(err)
