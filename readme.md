@@ -24,9 +24,18 @@ The application offers a range of functionalities to manage and access stock dat
 - **API Command Reference:** For detailed API commands, [click here](#stock-api-commands).
 
 
-## How to Setup
+# How to Setup
 
 This guide outlines the steps to set up the necessary database and tables for the stock management API.
+## 1. Docker (Build from source code)
+### Steps:
+1. **Run the following commands to set up**
+    ```
+   docker-compose build --no-cache
+   docker compose up
+   ```
+
+## 2. Local environment
 
 ### Requirements : 
 

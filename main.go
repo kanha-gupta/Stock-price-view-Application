@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	//please change below link if using docker
 	defaultUrl := "https://www.bseindia.com/download/BhavCopy/Equity/EQ250124_CSV.ZIP"
 	var url string
 	if len(os.Args) < 2 {
@@ -28,7 +29,10 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	db, err := sql.Open("mysql", "ODBC:0@tcp(localhost:3306)/app_database")
+	//for local
+	//db, err := sql.Open("mysql", "ODBC:0@tcp(localhost:3306)/app_database")
+	//for docker
+	db, err := sql.Open("mysql", "tester:secret@tcp(db:3306)/test")
 	if err != nil {
 		panic(err)
 	}
